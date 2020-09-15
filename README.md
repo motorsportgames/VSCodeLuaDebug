@@ -44,7 +44,6 @@ Luasocket is a C-based extension library for Lua that needs to be compiled.
 
 ### Lua Debugger
 1. From this repo, grab [dkjson.lua](https://github.com/schetle/VSCodeLuaDebug/blob/master/debuggee/dkjson.lua) and [vscode-debuggee.lua](https://github.com/schetle/VSCodeLuaDebug/blob/master/debuggee/vscode-debuggee.lua), and copy them into your project's root lua directory (again, it may be your `Content` folder, or something else depending on what you've setup)
-2. 
 
 ### LuaMachine
 1. In your LuaState, ensure these are disabled: `Enable Line Hook`, `Enable Call Hook`, `Enable Return Hook`. 
