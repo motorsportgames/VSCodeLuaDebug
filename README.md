@@ -1,4 +1,6 @@
 # LuaMachine Unreal Engine debugging
+![Debugging LuaMachine in VSCode](vscode_luamachine_debugging.png)
+
 ## Requirements
 * Visual Studio 2019 or 2017
 * Visual Studio Code
