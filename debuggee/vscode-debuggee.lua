@@ -15,6 +15,7 @@ local dumpCommunication = false
 local ignoreFirstFrameInC = false
 local debugTargetCo = nil
 local redirectedPrintFunction = nil
+local luaMachineRoot = nil
 
 local onError = nil
 local addUserdataVar = nil
@@ -54,12 +55,51 @@ coroutine.create = function(f)
 	return c
 end
 
+local function fix_source(source)
+	--[[
+		LuaMachine specific modification
+		The root cause of what breaks here is that the source for CodeAssets coming
+		out of LuaMachine will be labeled /Game/<somepath>/<sourcename>.<sourcename>
+		The issue here is that you won't have /Game/ on your source path in VSCode, nor
+		will you have any <sourcename>.<sourcename> files.
+
+		This, with luaMachineRoot being specified through config, will rewrite the source file info
+		so that vscode can find it.
+	]]--
+
+	local hasAt = source.sub(0, 1) == '@'
+
+	-- strip /Game/
+	local newSource = source:gsub('^' .. luaMachineRoot, '')
+	-- print('newSource: ' .. newSource)
+	local path,file,extension = string.match(newSource, "(.-)([^/]-([^/%.]+))$")
+
+	-- we'll restore the @ prefix if it was there originally
+	local prefix = nil
+	if hasAt then prefix = "@" else prefix = "" end
+
+	-- fix extension to represent a real file
+	newSource = prefix .. path .. file:gsub('.'..extension, '.lua')
+
+	return newSource
+end
 -------------------------------------------------------------------------------
 local function debug_getinfo(depth, what)
 	if debugTargetCo then
-		return debug.getinfo(debugTargetCo, depth, what)
+		local info = debug.getinfo(debugTargetCo, depth, what)
+
+		if info ~= nil and info.source ~= nil and info.source ~= '' then
+			info.source = fix_source(info.source)
+		end
+		return info
 	else
-		return debug.getinfo(depth + 1, what)
+		local info = debug.getinfo(depth + 1, what)
+
+		if info ~= nil and info.source ~= nil and info.source ~= '' then
+			info.source = fix_source(info.source)
+		end
+
+		return info
 	end
 end
 
@@ -493,6 +533,13 @@ function debuggee.start(jsonLib, config)
 	local redirectPrint  = config.redirectPrint or false
 	dumpCommunication    = config.dumpCommunication or false
 	ignoreFirstFrameInC  = config.ignoreFirstFrameInC or false
+
+	if config.luaMachineRoot ~= nil and config.luaMachineRoot ~= '' then
+		luaMachineRoot = '@/Game/' .. config.luaMachineRoot:match'^/*(.-)/*$' .. '/'
+	else
+		luaMachineRoot = '@/Game/'
+	end
+
 	if not config.luaStyleLog then
 		valueToString = function(value) return json.encode(value) end
 	end
