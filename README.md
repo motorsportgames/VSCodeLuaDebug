@@ -34,6 +34,13 @@ Luasocket is a C-based extension library for Lua that needs to be compiled.
 6. Create a new directory called `socket` inside of your UnrealEngine Binaries folder. E.g.: `UnrealEngine\Engine\Binaries\Win64\socket` and then copy your `luasocket/x64/Release/socket/core.dll` into that new folder. core.dll will be loaded at runtime when you require it in your lua code.
 7. Copy all of the .lua files from `luasocket/src` into your Project's root lua directory (this may be your `Content` folder, or it may be something else depending on your settings)
 
+#### macOS
+  *not tested*
+1. WIP, but the concept is the same as above. Make your core.dylib available to the UE binaries in a socket folder.
+
+#### Linux
+*not tested*
+1. WIP, but the concept is the same as above. Make your core.so available to the UE binaries in a socket folder.
 
 ### Lua Debugger
 1. From this repo, grab [dkjson.lua](https://github.com/schetle/VSCodeLuaDebug/blob/master/debuggee/dkjson.lua) and [vscode-debuggee.lua](https://github.com/schetle/VSCodeLuaDebug/blob/master/debuggee/vscode-debuggee.lua), and copy them into your project's root lua directory (again, it may be your `Content` folder, or something else depending on what you've setup)
